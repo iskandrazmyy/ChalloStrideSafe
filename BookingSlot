@@ -1,1 +1,249 @@
+package JavaFx;
 
+import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
+import java.util.HashSet;
+import java.util.Set;
+
+public class BookingSlotUI extends Application {
+
+    private TableView<String> tableView = new TableView<>();
+    private ObservableList<String> bookings = FXCollections.observableArrayList();
+    private Set<String> bookedSlots = new HashSet<>();
+
+    private String selectedSlot = null;
+
+    @Override
+    public void start(Stage stage) {
+
+        BorderPane root = new BorderPane();
+        root.setStyle("-fx-background-color: #eef5ff;");
+
+        // header
+        HBox header = new HBox(15);
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setPadding(new Insets(15, 30, 15, 30));
+        header.setStyle("-fx-background-color: #1565C0;");
+
+        Image logoImg = new Image("file:///C:/Users/muham/OneDrive/Documents/TestJava/src/JavaFx/logo.png");
+        ImageView logo = new ImageView(logoImg);
+        logo.setFitWidth(40);
+        logo.setFitHeight(40);
+
+        Label title = new Label("Athlete Booking Slot System");
+        title.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;");
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        Image profileImg = new Image("file:///C:/Users/muham/OneDrive/Documents/TestJava/src/JavaFx/profile.png");
+        ImageView profile = new ImageView(profileImg);
+        profile.setFitWidth(40);
+        profile.setFitHeight(40);
+
+        Circle clip = new Circle(20, 20, 20);
+        profile.setClip(clip);
+
+        header.getChildren().addAll(logo, title, spacer, profile);
+
+        VBox leftCard = new VBox(15);
+        leftCard.setAlignment(Pos.CENTER);
+        leftCard.setPadding(new Insets(20));
+        leftCard.setStyle(cardStyle());
+
+        Label slotLabel = new Label("Available Slots");
+        slotLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+        DatePicker datePicker = new DatePicker();
+        datePicker.setMaxWidth(200);
+
+        HBox slots = new HBox(10);
+        slots.setAlignment(Pos.CENTER);
+
+        Button slot1 = createSlot("7-8 PM");
+        Button slot2 = createSlot("8-9 PM");
+        Button slot3 = createSlot("9-10 PM");
+
+        slots.getChildren().addAll(slot1, slot2, slot3);
+
+        leftCard.getChildren().addAll(slotLabel, slots, datePicker);
+
+        VBox rightCard = new VBox(15);
+        rightCard.setAlignment(Pos.CENTER);
+        rightCard.setPadding(new Insets(20));
+        rightCard.setStyle(cardStyle());
+
+        Label formTitle = new Label("Book Training");
+        formTitle.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+
+        ComboBox<String> trainingBox = new ComboBox<>();
+        trainingBox.getItems().addAll("Sprint", "Strength", "Endurance");
+        trainingBox.setPromptText("Training Type");
+        trainingBox.setPrefWidth(200);
+
+        ComboBox<String> participantsBox = new ComboBox<>();
+        participantsBox.getItems().addAll("1", "2", "3", "4+");
+        participantsBox.setPromptText("Participants");
+        participantsBox.setPrefWidth(200);
+
+        Button bookBtn = new Button("BOOK SLOT");
+        bookBtn.setStyle("-fx-background-color: #1565C0; -fx-text-fill: white;");
+        bookBtn.setPrefWidth(200);
+
+        rightCard.getChildren().addAll(formTitle, trainingBox, participantsBox, bookBtn);
+
+        TableColumn<String, String> col = new TableColumn<>("My Bookings");
+        col.setCellValueFactory(data ->
+                new javafx.beans.property.SimpleStringProperty(data.getValue())
+        );
+        col.setPrefWidth(600);
+
+        tableView.getColumns().add(col);
+        tableView.setItems(bookings);
+
+        VBox tableBox = new VBox(10, new Label("Booking History"), tableView);
+        tableBox.setAlignment(Pos.CENTER);
+        tableBox.setPadding(new Insets(20));
+
+        HBox center = new HBox(30, leftCard, rightCard);
+        center.setAlignment(Pos.CENTER);
+
+        VBox main = new VBox(20, center, tableBox);
+        main.setAlignment(Pos.CENTER);
+        main.setPadding(new Insets(20));
+
+        root.setTop(header);
+        root.setCenter(main);
+
+        // slot
+        slot1.setOnAction(e -> selectSlot(slot1, "7-8 PM", slot1, slot2, slot3));
+        slot2.setOnAction(e -> selectSlot(slot2, "8-9 PM", slot1, slot2, slot3));
+        slot3.setOnAction(e -> selectSlot(slot3, "9-10 PM", slot1, slot2, slot3));
+
+        // book button
+        bookBtn.setOnAction(e -> {
+
+            if (datePicker.getValue() == null ||
+                selectedSlot == null ||
+                trainingBox.getValue() == null ||
+                participantsBox.getValue() == null) {
+
+                alert("Please select date, slot, training and participants!");
+                return;
+            }
+
+            String date = datePicker.getValue().toString();
+            String training = trainingBox.getValue();
+            String participants = participantsBox.getValue();
+
+            String key = date + "_" + selectedSlot;
+
+            if (bookedSlots.contains(key)) {
+                alert("The date and time is unavailable, please choose another date or time");
+                return;
+            }
+
+            bookedSlots.add(key);
+
+            bookings.add(date + " | " +
+                    selectedSlot + " | " +
+                    training + " | " +
+                    participants + " pax");
+
+            // update slot colors for this date only
+            updateSlotColors(datePicker, slot1, slot2, slot3);
+
+            selectedSlot = null;
+
+            info("Booking Confirmed!");
+        });
+
+        // update slots when date changes
+        datePicker.setOnAction(e ->
+                updateSlotColors(datePicker, slot1, slot2, slot3)
+        );
+
+        Scene scene = new Scene(root, 1100, 700);
+        stage.setTitle("Athlete Booking System");
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    private Button createSlot(String text) {
+        Button btn = new Button(text);
+        btn.setPrefWidth(100);
+        btn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+        return btn;
+    }
+
+    private void selectSlot(Button selectedBtn, String slot,
+                            Button... allButtons) {
+
+        selectedSlot = slot;
+
+        for (Button b : allButtons) {
+            if (!b.isDisabled()) {
+                b.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+            }
+        }
+
+        selectedBtn.setStyle("-fx-background-color: #FF9800; -fx-text-fill: black;");
+    }
+
+    // update colour after selection
+    private void updateSlotColors(DatePicker datePicker,
+                                  Button... buttons) {
+
+        if (datePicker.getValue() == null) return;
+
+        String date = datePicker.getValue().toString();
+
+        for (Button b : buttons) {
+
+            String key = date + "_" + b.getText();
+
+            if (bookedSlots.contains(key)) {
+                b.setStyle("-fx-background-color: #E53935; -fx-text-fill: white;");
+                b.setDisable(true);
+            } else {
+                b.setDisable(false);
+                b.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+            }
+        }
+    }
+
+    // alert
+    private void alert(String msg) {
+        Alert a = new Alert(Alert.AlertType.WARNING);
+        a.setContentText(msg);
+        a.show();
+    }
+
+    private void info(String msg) {
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setContentText(msg);
+        a.show();
+    }
+
+    // style
+    private String cardStyle() {
+        return "-fx-background-color: white;" +
+                "-fx-background-radius: 15;" +
+                "-fx-border-radius: 15;" +
+                "-fx-border-color: #ddd;";
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
