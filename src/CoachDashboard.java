@@ -19,32 +19,48 @@ public class CoachDashboard {
     public CoachDashboard(Stage stage) {
         this.primaryStage = stage;
     }
-    
+
+    // --- NEW HELPER METHOD FOR THE TOP HEADER ---
+    private HBox createTopHeader() {
+        HBox header = new HBox();
+        header.setAlignment(Pos.CENTER_LEFT);
+        // White background with a subtle shadow
+        header.setStyle("-fx-background-color: white; -fx-padding: 10 20 10 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+        header.setPrefHeight(70);
+
+        // 3-Lines Hamburger Menu Button
+        Button menuBtn = new Button("☰");
+        menuBtn.setStyle("-fx-background-color: #0B192C; -fx-text-fill: white; -fx-font-size: 24px; -fx-background-radius: 50; -fx-min-width: 50; -fx-min-height: 50; -fx-cursor: hand;");
+
+        // Spacers to push the system name to the center
+        Region leftSpacer = new Region();
+        HBox.setHgrow(leftSpacer, Priority.ALWAYS);
+
+        // System Name
+        Label systemName = new Label("Run With Challo");
+        systemName.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #0B192C;");
+
+        Region rightSpacer = new Region();
+        HBox.setHgrow(rightSpacer, Priority.ALWAYS);
+
+        header.getChildren().addAll(menuBtn, leftSpacer, systemName, rightSpacer);
+        return header;
+    }
+
     public Scene getDashboardScene() {
         BorderPane root = new BorderPane();
 
-        VBox sidebar = new VBox(30);
-        sidebar.setStyle("-fx-background-color: #0B192C; -fx-padding: 20;");
-        sidebar.setPrefWidth(200);
-
-        Label brand = new Label("StrideSafe");
-        brand.setStyle("-fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: bold;");
-        
-        Label teamNav = new Label("👥 Team");
-        teamNav.setStyle("-fx-text-fill: white; -fx-font-size: 14px;");
-        Label reportsNav = new Label("📊 Reports");
-        reportsNav.setStyle("-fx-text-fill: #a8b2c1; -fx-font-size: 14px;");
-        Label alertsNav = new Label("🔔 Alerts");
-        alertsNav.setStyle("-fx-text-fill: #a8b2c1; -fx-font-size: 14px;");
-
-        sidebar.getChildren().addAll(brand, teamNav, reportsNav, alertsNav);
+        // Add our new Top Header
+        root.setTop(createTopHeader());
 
         VBox content = new VBox(20);
         content.setPadding(new Insets(20, 30, 20, 30));
-        content.setStyle("-fx-background-color: #f4f7f6;");
+        // Change Main Background to Dark Blue
+        content.setStyle("-fx-background-color: #0B192C;");
 
+        // Change Title to White to contrast with dark blue
         Label title = new Label("COACH DASHBOARD");
-        title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #0B192C;");
+        title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;");
 
         HBox statsBox = new HBox(20);
         statsBox.getChildren().addAll(
@@ -75,9 +91,9 @@ public class CoachDashboard {
 
         ScrollPane scrollPane = new ScrollPane(content);
         scrollPane.setFitToWidth(true);
-        scrollPane.setStyle("-fx-background-color: transparent; -fx-background: #ffffff;");
+        // Make the scrollpane background match the dark blue
+        scrollPane.setStyle("-fx-background-color: transparent; -fx-background: #0B192C;");
 
-        root.setLeft(sidebar);
         root.setCenter(scrollPane);
 
         dashboardScene = new Scene(root, 1000, 750);
@@ -187,27 +203,25 @@ public class CoachDashboard {
 
         return table;
     }
-    //jangan lupa to make strict time
+
     public Scene getScheduleScene(Athlete athlete) {
         BorderPane layout = new BorderPane();
-        layout.setStyle("-fx-background-color: #f4f7f6;");
+        // Change Schedule Main Background to Dark Blue
+        layout.setStyle("-fx-background-color: #0B192C;");
 
-        VBox topBox = new VBox(10);
-        topBox.setPadding(new Insets(20));
-        topBox.setStyle("-fx-background-color: #0B192C;");
-        
-        Button backBtn = new Button("← Back to Dashboard");
-        backBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
-        backBtn.setOnAction(e -> primaryStage.setScene(dashboardScene));
-        
-        Label header = new Label("Athlete Schedule & Availability");
-        header.setStyle("-fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: bold;");
-        
-        topBox.getChildren().addAll(backBtn, header);
-        layout.setTop(topBox);
+        // Add the top header to the schedule scene as well
+        layout.setTop(createTopHeader());
 
         VBox centerContainer = new VBox(25);
         centerContainer.setPadding(new Insets(30));
+
+        // Add back button inside the main view
+        Button backBtn = new Button("← Back to Dashboard");
+        backBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-font-size: 14px;");
+        backBtn.setOnAction(e -> primaryStage.setScene(dashboardScene));
+
+        Label header = new Label("Athlete Schedule & Availability");
+        header.setStyle("-fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: bold;");
 
         HBox profileCard = new HBox(20);
         profileCard.setAlignment(Pos.CENTER_LEFT);
@@ -232,8 +246,9 @@ public class CoachDashboard {
         VBox calSide = new VBox(15);
         calSide.setMinWidth(550); 
         
+        // Changed text to white so it's visible on dark blue background
         Label calLabel = new Label("Current Month Schedule");
-        calLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 18px;");
+        calLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 18px; -fx-text-fill: white;");
         
         GridPane calendarGrid = new GridPane();
         calendarGrid.setHgap(5);
@@ -254,8 +269,9 @@ public class CoachDashboard {
             calendarGrid.add(dayHeader, i, 0);
         }
 
+        // Changed default text to white
         Label selectedDateLabel = new Label("Please select a date from the calendar");
-        selectedDateLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #6c757d; -fx-font-style: italic;");
+        selectedDateLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #a8b2c1; -fx-font-style: italic;");
 
         VBox[] dayCells = new VBox[32];
         int[] currentSelectedDay = {-1}; 
@@ -356,11 +372,12 @@ public class CoachDashboard {
         );
 
         contentSplit.getChildren().addAll(calSide, formSide);
-        centerContainer.getChildren().addAll(profileCard, contentSplit);
+        centerContainer.getChildren().addAll(backBtn, header, profileCard, contentSplit);
         
         ScrollPane centerScroll = new ScrollPane(centerContainer);
         centerScroll.setFitToWidth(true);
-        centerScroll.setStyle("-fx-background-color: transparent;");
+        // Match scrollpane background to the new dark blue layout
+        centerScroll.setStyle("-fx-background-color: transparent; -fx-background: #0B192C;");
         
         layout.setCenter(centerScroll);
 
