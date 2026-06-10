@@ -1,0 +1,85 @@
+HBox header = new HBox(20);
+header.setAlignment(Pos.CENTER_LEFT);
+header.setPadding(new Insets(10, 25, 10, 25));
+header.setStyle("-fx-background-color: #0c3253;");
+
+// LEFT - LOGO (FIXED SIZE)
+Image logoImg = new Image("file:///C:/Users/muham/OneDrive/Documents/TestJava/src/JavaFx/logo.png");
+ImageView logo = new ImageView(logoImg);
+logo.setFitWidth(67);  
+logo.setFitHeight(67);  
+logo.setPreserveRatio(true);
+
+// ================= MIDDLE NAV =================
+HBox navMenu = new HBox(25);
+navMenu.setAlignment(Pos.CENTER);
+
+Button dashboardBtn = new Button("Dashboard");
+Button runLogBtn = new Button("RunLog");
+Button scheduleBtn = new Button("Schedule");
+Button bookingBtn = new Button("Booking");
+Button manageBtn = new Button("Manage");
+Button coachBtn = new Button("Coach");
+
+String navStyle =
+        "-fx-background-color: transparent;" +
+        "-fx-text-fill: white;" +
+        "-fx-font-size: 14px;" +
+        "-fx-cursor: hand;";
+
+for (Button b : new Button[]{
+        dashboardBtn, runLogBtn, scheduleBtn, bookingBtn, manageBtn, coachBtn}) {
+
+    b.setStyle(navStyle);
+
+    b.setOnMouseEntered(e ->
+            b.setStyle("-fx-background-color: #144a78; -fx-text-fill: white; -fx-font-size: 14px;"));
+
+    b.setOnMouseExited(e ->
+            b.setStyle(navStyle));
+}
+
+navMenu.getChildren().addAll(
+        dashboardBtn, runLogBtn, scheduleBtn, bookingBtn, manageBtn, coachBtn
+);
+
+Region leftSpacer = new Region();
+Region rightSpacer = new Region();
+HBox.setHgrow(leftSpacer, Priority.ALWAYS);
+HBox.setHgrow(rightSpacer, Priority.ALWAYS);
+
+// ================= RIGHT USER SECTION =================
+Label username = new Label("Hi, User");
+username.setStyle("-fx-text-fill: white; -fx-font-size: 14px;");
+
+Image profileImg = new Image("file:///C:/Users/muham/OneDrive/Documents/TestJava/src/JavaFx/profile.png");
+ImageView profile = new ImageView(profileImg);
+
+profile.setFitWidth(43);   
+profile.setFitHeight(43);  
+profile.setPreserveRatio(true);
+
+Circle clip = new Circle(21.5, 21.5, 21.5);
+profile.setClip(clip);
+
+ContextMenu profileMenu = new ContextMenu();
+MenuItem logout = new MenuItem("Logout");
+
+logout.setOnAction(e -> System.out.println("Logout clicked"));
+
+profileMenu.getItems().add(logout);
+
+profile.setOnMouseClicked(e ->
+        profileMenu.show(profile, e.getScreenX(), e.getScreenY())
+);
+
+HBox userBox = new HBox(10, username, profile);
+userBox.setAlignment(Pos.CENTER_RIGHT);
+
+header.getChildren().addAll(
+        logo,
+        leftSpacer,
+        navMenu,
+        rightSpacer,
+        userBox
+);
