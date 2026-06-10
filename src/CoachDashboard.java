@@ -129,7 +129,7 @@ public class CoachDashboard {
     private TableView<Athlete> buildTable() {
         TableView<Athlete> table = new TableView<>();
         table.setPrefHeight(130);
-        table.setStyle("-fx-border-color: #e0e0e0;");
+        table.setStyle("-fx-base: white; -fx-control-inner-background: white; -fx-border-color: #e0e0e0; -fx-text-background-color: #0B192C; -fx-font-weight: bold;");
 
         TableColumn<Athlete, String> idCol = new TableColumn<>("Ath ID");
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
