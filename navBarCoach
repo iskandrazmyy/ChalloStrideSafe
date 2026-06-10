@@ -42,7 +42,7 @@ HBox.setHgrow(leftSpacer, Priority.ALWAYS);
 HBox.setHgrow(rightSpacer, Priority.ALWAYS);
 
 // ================= RIGHT USER SECTION =================
-Label username = new Label("Hi, Messi");
+Label username = new Label("Hi, User");
 username.setStyle("-fx-text-fill: white; -fx-font-size: 14px;");
 
 Image profileImg = new Image("file:///C:/Users/muham/OneDrive/Documents/TestJava/src/JavaFx/profile.png");
