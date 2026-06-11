@@ -504,21 +504,45 @@ public class CoachDashboard {
         List<Athlete> athletes = new ArrayList<>();
         try {
             File file = new File("athletes.txt");
+            boolean needsDummyData = false;
+
+            // Check if file exists, if not create it
             if (!file.exists()) {
                 file.createNewFile();
-                return athletes;
-            }
-            Scanner scanner = new Scanner(file);
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine().trim();
-                if (line.isEmpty()) continue; // Skip empty lines safely
+                needsDummyData = true;
+            } else {
+                // Read existing data
+                Scanner scanner = new Scanner(file);
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine().trim();
+                    if (line.isEmpty()) continue; // Skip empty lines safely
+                    
+                    String[] data = line.split(",");
+                    if (data.length == 4) {
+                        athletes.add(new Athlete(data[0].trim(), data[1].trim(), Integer.parseInt(data[2].trim()), data[3].trim()));
+                    }
+                }
+                scanner.close();
                 
-                String[] data = line.split(",");
-                if (data.length == 4) {
-                    athletes.add(new Athlete(data[0].trim(), data[1].trim(), Integer.parseInt(data[2].trim()), data[3].trim()));
+                // If the file exists but has no data inside it
+                if (athletes.isEmpty()) {
+                    needsDummyData = true;
                 }
             }
-            scanner.close();
+
+            // AUTO-GENERATE dummy data for testing if no athletes were found
+            if (needsDummyData) {
+                athletes.add(new Athlete("ID-001", "Usain Bolt", 24, "Stable"));
+                athletes.add(new Athlete("ID-002", "Eliud Kipchoge", 28, "High Risk"));
+                athletes.add(new Athlete("ID-003", "Mo Farah", 22, "Underperforming"));
+                athletes.add(new Athlete("ID-004", "Florence Griffith", 25, "Consistent"));
+                
+                // Save these dummy athletes to the text file so they stay there
+                for (Athlete dummy : athletes) {
+                    saveAthleteToFile(dummy);
+                }
+            }
+
         } catch (Exception e) {
             System.out.println("Error reading file: " + e.getMessage());
         }
