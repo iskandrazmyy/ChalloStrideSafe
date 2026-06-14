@@ -1,4 +1,4 @@
-package JavaFx;
+package com.mycompany.mavenproject3;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -36,11 +36,18 @@ public class BookingSlotUI extends Application {
         header.setStyle("-fx-background-color: #0c3253;");
 
         // LEFT - LOGO (FIXED SIZE)
-        Image logoImg = new Image("file:///C:/Users/muham/OneDrive/Documents/TestJava/src/JavaFx/logo.png");
-        ImageView logo = new ImageView(logoImg);
-        logo.setFitWidth(67);  
-        logo.setFitHeight(67);  
-        logo.setPreserveRatio(true);
+        try {
+            Image logoImg = new Image("file:///C:/Users/muham/OneDrive/Documents/TestJava/src/JavaFx/logo.png");
+            ImageView logo = new ImageView(logoImg);
+            logo.setFitWidth(67);
+            logo.setFitHeight(67);
+            logo.setPreserveRatio(true);
+            header.getChildren().add(logo);
+        } catch (Exception e) {
+            Label logoFallback = new Label("Logo");
+            logoFallback.setStyle("-fx-text-fill: white;");
+            header.getChildren().add(logoFallback);
+        }
 
         // ================= MIDDLE NAV =================
         HBox navMenu = new HBox(25);
@@ -78,7 +85,12 @@ public class BookingSlotUI extends Application {
         Label username = new Label("Hi, User");
         username.setStyle("-fx-text-fill: white; -fx-font-size: 14px;");
 
-        Image profileImg = new Image("file:///C:/Users/muham/OneDrive/Documents/TestJava/src/JavaFx/profile.png");
+        Image profileImg = null;
+        try {
+            profileImg = new Image("file:///C:/Users/muham/OneDrive/Documents/TestJava/src/JavaFx/profile.png");
+        } catch (Exception e) {
+            // Ignore if image not found
+        }
         ImageView profile = new ImageView(profileImg);
 
         profile.setFitWidth(43);   
@@ -103,7 +115,6 @@ public class BookingSlotUI extends Application {
         userBox.setAlignment(Pos.CENTER_RIGHT);
 
         header.getChildren().addAll(
-                logo,
                 leftSpacer,
                 navMenu,
                 rightSpacer,
@@ -167,7 +178,7 @@ public class BookingSlotUI extends Application {
         tableView.getColumns().add(col);
         tableView.setItems(bookings);
 
-        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         tableView.setStyle(
                 "-fx-border-color: #0c3253;" +
