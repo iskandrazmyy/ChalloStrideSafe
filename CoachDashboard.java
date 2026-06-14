@@ -1,3 +1,13 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
+ */
+package com.mycompany.mavenproject3;
+
+/**
+ *
+ * @author iskandar
+ */
 import javafx.animation.Animation;
 import javafx.animation.ScaleTransition;
 import javafx.geometry.Insets;
@@ -237,7 +247,7 @@ public class CoachDashboard {
 
     private TableView<Athlete> buildTable() {
         TableView<Athlete> table = new TableView<>();
-        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         table.setFixedCellSize(40);
         table.prefHeightProperty().bind(
             javafx.beans.binding.Bindings.size(table.getItems())

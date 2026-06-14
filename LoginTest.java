@@ -1,4 +1,4 @@
-package com.example;
+package com.mycompany.mavenproject3;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -159,64 +159,36 @@ public class LoginTest extends Application {
     }
 
     private void showUserDashboard(String username) {
-        VBox dashboardBox = new VBox(20);
-        dashboardBox.setAlignment(Pos.CENTER);
-        dashboardBox.setPadding(new Insets(40));
-
-        String bgColor = "";
-        String dashboardTitle = "";
+        primaryStage.setFullScreen(false);
 
         switch (selectedUserType) {
             case "Athlete":
-                bgColor = "#e8f5e9";
-                dashboardTitle = "Athlete Dashboard";
+                try {
+                    new AthleteDashboard(username).start(new Stage());
+                    primaryStage.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
                 break;
+
             case "Coach":
-                bgColor = "#e3f2fd";
-                dashboardTitle = "Coach Dashboard";
+                CoachDashboard coachDashboard = new CoachDashboard(primaryStage);
+                primaryStage.setScene(coachDashboard.getDashboardScene());
+                primaryStage.setTitle("Challo StrideSafe - Coach Dashboard");
                 break;
+
             case "Admin":
-                bgColor = "#fff3e0";
-                dashboardTitle = "Admin Dashboard";
+                try {
+                    new AdminDashboard(username).start(new Stage());
+                    primaryStage.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
                 break;
-        }
 
-        setBackgroundImage(dashboardBox, "-fx-background-color: " + bgColor + ";");
-
-        Label titleLbl = new Label(dashboardTitle);
-        titleLbl.setFont(Font.font("Arial", FontWeight.BOLD, 20));
-
-        Label userLbl = new Label("Logged in as: " + username);
-        userLbl.setFont(Font.font("Arial", 14));
-
-        Label contentLbl = new Label(getDashboardContent(selectedUserType));
-        contentLbl.setFont(Font.font("Arial", 13));
-        contentLbl.setWrapText(true);
-
-        Button btnBack = new Button("Back to Main");
-        btnBack.setPrefWidth(150);
-        btnBack.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white;");
-
-        btnBack.setOnAction(e -> {
-            showMainPage(username);
-        });
-
-        dashboardBox.getChildren().addAll(titleLbl, userLbl, contentLbl, btnBack);
-
-        Scene dashboardScene = new Scene(dashboardBox, 500, 400);
-        primaryStage.setScene(dashboardScene);
-    }
-
-    private String getDashboardContent(String userType) {
-        switch (userType) {
-            case "Athlete":
-                return "• View your training schedule\n• Track your performance\n• Update your profile";
-            case "Coach":
-                return "• Manage athlete profiles\n• Create training programs\n• Monitor athlete progress\n• Schedule training sessions";
-            case "Admin":
-                return "• Manage all users\n• System settings\n• Generate reports\n• Manage competitions";
             default:
-                return "Dashboard content";
+                showMainPage(username);
+                break;
         }
     }
 
