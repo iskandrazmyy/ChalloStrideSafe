@@ -91,7 +91,7 @@ public class AthleteDashboard extends Application {
 
         scheduleBtn.setOnAction(e -> {
             try {
-                new ScheduleTest().start(new Stage());
+                new ScheduleTest(athleteName).start(new Stage());
                 ((Stage) scheduleBtn.getScene().getWindow()).close();
             } catch (Exception ex) { ex.printStackTrace(); }
         });
