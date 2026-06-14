@@ -24,6 +24,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -33,7 +34,16 @@ import javafx.stage.Stage;
  */
 public class ScheduleTest extends Application {
 
-    private final String currentAthleteName = "Amirul";
+    private String currentAthleteName = "Amirul";
+
+    public ScheduleTest() {
+    }
+
+    public ScheduleTest(String athleteName) {
+        if (athleteName != null && !athleteName.isEmpty()) {
+            this.currentAthleteName = athleteName;
+        }
+    }
 
     private final List<Schedule> scheduleList = new ArrayList<>();
 
@@ -51,6 +61,116 @@ public class ScheduleTest extends Application {
     public void start(Stage stage) {
 
         addSampleSchedules();
+
+        // ================= NAVIGATION BAR START =================
+        HBox header = new HBox(20);
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setPadding(new Insets(10, 25, 10, 25));
+        header.setStyle("-fx-background-color: #0c3253;");
+
+        // LEFT - LOGO
+        try {
+            javafx.scene.image.Image logoImg = new javafx.scene.image.Image("file:///C:/Users/muham/OneDrive/Documents/TestJava/src/JavaFx/logo.png");
+            javafx.scene.image.ImageView logo = new javafx.scene.image.ImageView(logoImg);
+            logo.setFitWidth(67);
+            logo.setFitHeight(67);
+            logo.setPreserveRatio(true);
+            header.getChildren().add(logo);
+        } catch (Exception ex) {
+            Label logoFallback = new Label("Logo");
+            logoFallback.setStyle("-fx-text-fill: white;");
+            header.getChildren().add(logoFallback);
+        }
+
+        // ================= MIDDLE NAV =================
+        HBox navMenu = new HBox(25);
+        navMenu.setAlignment(Pos.CENTER);
+
+        Button dashboardBtn = new Button("Dashboard");
+        Button runLogBtn = new Button("RunLog");
+        Button scheduleBtn = new Button("Schedule");
+        Button bookingBtn = new Button("Booking");
+
+        String navStyle = "-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;";
+
+        for (Button b : new Button[]{dashboardBtn, runLogBtn, scheduleBtn, bookingBtn}) {
+            b.setStyle(navStyle);
+            b.setOnMouseEntered(e -> b.setStyle("-fx-background-color: #144a78; -fx-text-fill: white; -fx-font-size: 14px;"));
+            b.setOnMouseExited(e -> b.setStyle(navStyle));
+        }
+
+        // Highlight the current page
+        scheduleBtn.setStyle("-fx-background-color: #144a78; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
+        scheduleBtn.setOnMouseExited(e -> scheduleBtn.setStyle("-fx-background-color: #144a78; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;"));
+
+        // --- NAVIGATION ROUTING LOGIC ---
+        dashboardBtn.setOnAction(e -> {
+            try {
+                new AthleteDashboard(currentAthleteName).start(new Stage());
+                stage.close();
+            } catch (Exception ex) { ex.printStackTrace(); }
+        });
+
+        runLogBtn.setOnAction(e -> {
+            try {
+                new RunLogDashboard().start(new Stage());
+                stage.close();
+            } catch (Exception ex) { ex.printStackTrace(); }
+        });
+
+        bookingBtn.setOnAction(e -> {
+            try {
+                new BookingSlotUI().start(new Stage());
+                stage.close();
+            } catch (Exception ex) { ex.printStackTrace(); }
+        });
+
+        navMenu.getChildren().addAll(dashboardBtn, runLogBtn, scheduleBtn, bookingBtn);
+
+        Region navLeftSpacer = new Region();
+        Region navRightSpacer = new Region();
+        HBox.setHgrow(navLeftSpacer, Priority.ALWAYS);
+        HBox.setHgrow(navRightSpacer, Priority.ALWAYS);
+
+        // ================= RIGHT USER SECTION =================
+        Label navUsername = new Label("Hi, " + currentAthleteName);
+        navUsername.setStyle("-fx-text-fill: white; -fx-font-size: 14px;");
+
+        javafx.scene.image.Image profileImg = null;
+        try {
+            profileImg = new javafx.scene.image.Image("file:///C:/Users/muham/OneDrive/Documents/TestJava/src/JavaFx/profile.png");
+        } catch (Exception ex) {
+            // Ignore if image not found
+        }
+
+        javafx.scene.image.ImageView profile = new javafx.scene.image.ImageView(profileImg);
+        profile.setFitWidth(43);
+        profile.setFitHeight(43);
+        profile.setPreserveRatio(true);
+
+        javafx.scene.shape.Circle clip = new javafx.scene.shape.Circle(21.5, 21.5, 21.5);
+        profile.setClip(clip);
+
+        javafx.scene.control.ContextMenu profileMenu = new javafx.scene.control.ContextMenu();
+        javafx.scene.control.MenuItem logout = new javafx.scene.control.MenuItem("Logout");
+
+        logout.setOnAction(e -> {
+            try {
+                new LoginTest().start(new Stage());
+                stage.close();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        profileMenu.getItems().add(logout);
+        profile.setOnMouseClicked(e -> profileMenu.show(profile, e.getScreenX(), e.getScreenY()));
+
+        HBox userBox = new HBox(10, navUsername, profile);
+        userBox.setAlignment(Pos.CENTER_RIGHT);
+
+        header.getChildren().addAll(navLeftSpacer, navMenu, navRightSpacer, userBox);
+        // ================= NAVIGATION BAR END =================
 
         // ===== Top-left title =====
         Label titleLabel = new Label("Athlete Schedule");
@@ -73,10 +193,10 @@ public class ScheduleTest extends Application {
         );
 
         // Places title on left and username on right
-        BorderPane header = new BorderPane();
+        BorderPane pageHeader = new BorderPane();
 
-        header.setLeft(titleLabel);
-        header.setRight(nameLabel);
+        pageHeader.setLeft(titleLabel);
+        pageHeader.setRight(nameLabel);
 
         BorderPane.setAlignment(
                 titleLabel,
@@ -118,6 +238,7 @@ public class ScheduleTest extends Application {
         VBox topSection = new VBox(
                 20,
                 header,
+                pageHeader,
                 navigationBox
         );
 
